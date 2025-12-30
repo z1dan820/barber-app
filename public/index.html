@@ -157,9 +157,11 @@
                     // Regular (D, R, A) = 50%
                     const omsetReg = (rec.d * 40000) + (rec.r * 30000) + (rec.a * 25000);
                     const incomeReg = omsetReg * 0.50;
-
-                    // Paket (P1, P2, P3) = 60%
-                    const omsetPkt = (rec.p1 * 50000) + (rec.p2 * 70000) + (rec.p3 * 90000);
+                    // Paket 1 (P1) = 55%
+                    const omsetPkt = (rec.p1 * 50000)
+                    const incomePkt = omsetPkt * 0.55;
+                    // Paket (P2, P3) = 60%
+                    const omsetPkt = (rec.p2 * 70000) + (rec.p3 * 90000);
                     const incomePkt = omsetPkt * 0.60;
 
                     return incomeReg + incomePkt;
