@@ -5,8 +5,8 @@
 ✍🏻  by Fahrul Hamzidan Pulungan 
 
 
-![Tampilan App](Ss.jpg)
-![Tampilan App](Ss1.jpg)
+![Tampilan App](Ss.jpg), ![Tampilan App](Ss1.jpg)
+
 
 
 
