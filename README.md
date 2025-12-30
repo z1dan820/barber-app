@@ -1,27 +1,17 @@
 **BARBER TRACK INCOME APP NodeJS & ExpressJs BASED**
+
+
+
 ✍🏻  by Fahrul Hamzidan Pulungan 
-*
-*
-*
-*
-*
-*
-*
-*
-*
-*
-*
-*
-*
-*
-*
-*
-*
-*
-*
-*
-*
-*
+
+
+(Ss.jpg)
+(Ss1.jpg)
+
+
+
+
+
 **Cara Instalasi & Running App**
 
 Clonning repo ini ke VPS atau STB kalian di terminal dengan cara salin perintah di bawah ini:
