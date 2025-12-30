@@ -51,7 +51,7 @@ maka app akan nyala otomatis saat stb di reboot
 
 
 cara memberhentikan app dari PM2:
-```pm2 delete barber-app```
+```pm2 stop barber-app```
 
 
 
