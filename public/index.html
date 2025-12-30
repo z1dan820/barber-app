@@ -10,7 +10,6 @@
     
     <style>
         body { font-family: 'Inter', sans-serif; }
-        /* Hide scrollbar for clean look */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -52,11 +51,10 @@
                         </div>
                     </template>
                 </div>
-
-                <div class="h-24"></div> </div>
+                <div class="h-24"></div> 
+            </div>
 
             <div x-show="tab === 'dashboard'" x-transition.opacity>
-                
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-lg font-bold text-white">Bulan Ini</h2>
                     <input type="month" x-model="filterMonth" @change="filterData()" class="bg-gray-800 text-xs text-white px-3 py-1 rounded-lg border border-gray-700">
@@ -91,9 +89,6 @@
                             </div>
                         </div>
                     </template>
-                    <div x-show="filteredRecords.length === 0" class="text-center py-10 text-gray-500 text-sm">
-                        Belum ada data bulan ini.
-                    </div>
                 </div>
 
                 <div class="mt-8 border-t border-gray-800 pt-6">
@@ -101,75 +96,67 @@
                         ⚠ Hapus Semua Data (Reset STB)
                     </button>
                 </div>
-                
-                <div class="h-24"></div> </div>
-
+                <div class="h-24"></div> 
+            </div>
         </div>
 
         <div x-show="tab === 'input'" class="absolute bottom-6 left-0 right-0 px-6 z-30">
             <button @click="saveData()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-600/40 transition-all active:scale-95 flex justify-center items-center gap-2">
                 <span>Simpan Hari Ini</span>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
             </button>
         </div>
-
     </div>
 
     <script>
         function app() {
             return {
                 tab: 'input',
-                inputDate: new Date().toISOString().split('T')[0], // Default hari ini
-                filterMonth: new Date().toISOString().slice(0, 7), // YYYY-MM
+                inputDate: new Date().toISOString().split('T')[0],
+                filterMonth: new Date().toISOString().slice(0, 7),
                 records: [],
                 filteredRecords: [],
                 totalIncome: 0,
                 totalOmset: 0,
-                
-                // Konfigurasi Harga
                 items: [
-                    { key: 'd', label: 'Dewasa', price: 40000, type: 'reg' },
-                    { key: 'r', label: 'Remaja', price: 30000, type: 'reg' },
-                    { key: 'a', label: 'Anak-Anak', price: 25000, type: 'reg' },
-                    { key: 'p1', label: 'Paket 1', price: 50000, type: 'pkt' },
-                    { key: 'p2', label: 'Paket 2', price: 70000, type: 'pkt' },
-                    { key: 'p3', label: 'Paket 3', price: 90000, type: 'pkt' },
+                    { key: 'd', label: 'Dewasa', price: 40000 },
+                    { key: 'r', label: 'Remaja', price: 30000 },
+                    { key: 'a', label: 'Anak-Anak', price: 25000 },
+                    { key: 'p1', label: 'Paket 1', price: 50000 },
+                    { key: 'p2', label: 'Paket 2', price: 70000 },
+                    { key: 'p3', label: 'Paket 3', price: 90000 },
                 ],
-                
-                // Data Input Sementara
                 counts: { d:0, r:0, a:0, p1:0, p2:0, p3:0 },
 
                 async fetchData() {
-                    const res = await fetch('/api/records');
-                    const json = await res.json();
-                    this.records = json.data;
-                    this.filterData();
+                    try {
+                        const res = await fetch('/api/records');
+                        const json = await res.json();
+                        this.records = json.data || [];
+                        this.filterData();
+                    } catch (e) { console.error(e); }
                 },
 
                 filterData() {
-                    // Filter berdasarkan bulan yang dipilih di input type="month"
                     this.filteredRecords = this.records.filter(r => r.date.startsWith(this.filterMonth));
                     this.calculateTotals();
                 },
 
                 calculateDailyIncome(rec) {
-                    // Logika Perhitungan Penghasilan Anda
-                    // Regular (D, R, A) = 50%
-                    const omsetReg = (rec.d * 40000) + (rec.r * 30000) + (rec.a * 25000);
-                    const incomeReg = omsetReg * 0.50;
-                    // Paket 1 (P1) = 55%
-                    const omsetPkt = (rec.p1 * 50000);
-                    const incomePkt = omsetPkt * 0.55;
-                    // Paket (P2, P3) = 60%
-                    const omsetPkt = (rec.p2 * 70000) + (rec.p3 * 90000);
-                    const incomePkt = omsetPkt * 0.60;
+                    // 1. Reguler (D, R, A) -> 50%
+                    const incomeReg = ((rec.d * 40000) + (rec.r * 30000) + (rec.a * 25000)) * 0.50;
+                    
+                    // 2. Paket 1 -> 55%
+                    const incomeP1 = (rec.p1 * 50000) * 0.55;
+                    
+                    // 3. Paket 2 & 3 -> 60%
+                    const incomeP2P3 = ((rec.p2 * 70000) + (rec.p3 * 90000)) * 0.60;
 
-                    return incomeReg + incomePkt;
+                    return incomeReg + incomeP1 + incomeP2P3;
                 },
 
                 calculateDailyOmset(rec) {
-                     return (rec.d * 40000) + (rec.r * 30000) + (rec.a * 25000) + 
-                            (rec.p1 * 50000) + (rec.p2 * 70000) + (rec.p3 * 90000);
+                    return (rec.d * 40000) + (rec.r * 30000) + (rec.a * 25000) + 
+                           (rec.p1 * 50000) + (rec.p2 * 70000) + (rec.p3 * 90000);
                 },
 
                 calculateTotals() {
@@ -178,35 +165,25 @@
                 },
 
                 async saveData() {
-                    // Cek jika kosong
                     const total = Object.values(this.counts).reduce((a, b) => a + b, 0);
                     if (total === 0) return alert("Isi data terlebih dahulu!");
-
-                    const payload = {
-                        date: this.inputDate,
-                        ...this.counts
-                    };
-
+                    
                     await fetch('/api/records', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
+                        body: JSON.stringify({ date: this.inputDate, ...this.counts })
                     });
 
-                    // Reset Input
                     this.counts = { d:0, r:0, a:0, p1:0, p2:0, p3:0 };
-                    alert("Data berhasil disimpan!");
-                    
-                    // Refresh Dashboard
+                    alert("Data disimpan!");
                     await this.fetchData();
                     this.tab = 'dashboard';
                 },
 
                 async clearData() {
-                    if(!confirm("Anda yakin ingin menghapus SELURUH data? Tidak bisa dikembalikan.")) return;
+                    if(!confirm("Hapus semua data?")) return;
                     await fetch('/api/clear', { method: 'DELETE' });
                     await this.fetchData();
-                    alert("Penyimpanan bersih.");
                 },
 
                 formatRupiah(num) {
@@ -214,11 +191,11 @@
                 },
                 
                 formatDate(dateStr) {
-                    const options = { weekday: 'long', day: 'numeric', month: 'long' };
-                    return new Date(dateStr).toLocaleDateString('id-ID', options);
+                    return new Date(dateStr).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
                 }
             }
         }
     </script>
 </body>
 </html>
+
